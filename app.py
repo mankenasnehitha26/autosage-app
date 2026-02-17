@@ -3,61 +3,187 @@ import streamlit as st
 from google import genai
 from dotenv import load_dotenv
 
-def local_css():
-    st.markdown("""
-    <style>
-        /* Main background and font */
-        .stApp {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1600");
-            background-size: cover;
-            color: white;
-        }
-        
-        /* Modernize the sidebar */
-        [data-testid="stSidebar"] {
-            background-color: rgba(20, 20, 20, 0.9);
-            border-right: 1px solid #ff4b4b;
-        }
+st.set_page_config(
+    page_title="AutoSage - AI Vehicle Expert",
+    page_icon="🏎️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+st.markdown("""
+<style>
 
-        /* Styling buttons to look 'automotive' */
-        div.stButton > button {
-            background-color: #ff4b4b;
-            color: white;
-            border-radius: 20px;
-            border: none;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        
-        div.stButton > button:hover {
-            background-color: #ff3333;
-            transform: scale(1.05);
-            box-shadow: 0px 4px 15px rgba(255, 75, 75, 0.4);
-        }
+/* Background */
+.stApp {
+    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
+                url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1600");
+    background-size: cover;
+    background-attachment: fixed;
+}
+/* Sidebar background */
+[data-testid="stSidebar"] {
+    background-color: #111111;
+    border-right: 1px solid #ff4b4b;
+}
 
-        /* Metric cards styling */
-        [data-testid="stMetricValue"] {
-            color: #ff4b4b;
-            font-family: 'Orbitron', sans-serif;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+/* Sidebar title */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] label {
+    color: white !important;
+    font-weight: 600;
+}
 
-local_css()
+/* Radio buttons */
+[data-testid="stSidebar"] .stRadio label {
+    color: white !important;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+/* Hover effect */
+[data-testid="stSidebar"] .stRadio label:hover {
+    background-color: rgba(255, 75, 75, 0.2);
+}
+
+/* Selected option highlight */
+[data-testid="stSidebar"] .stRadio input:checked + div {
+    background-color: #ff4b4b !important;
+    border-radius: 10px;
+}
+/* Remove white top header */
+header[data-testid="stHeader"] {
+    background-color: #0d0d0d !important;
+}
+
+/* Remove default Streamlit toolbar background */
+div[data-testid="stToolbar"] {
+    background-color: #0d0d0d !important;
+}
+
+/* Make header icons visible */
+header[data-testid="stHeader"] button {
+    color: white !important;
+}
+
+/* Remove white menu area */
+section[data-testid="stSidebar"] + div {
+    background-color: transparent !important;
+}
+
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #111111;
+    border-right: 1px solid #ff4b4b;
+}
+/* Make all main content text pure white */
+/* Main content text (summary + paragraphs) */
+.main .block-container {
+    color: #f2f2f2 !important;   /* Soft white for readability */
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+/* Bullet point text */
+ul li {
+    color: #e6e6e6 !important;   /* Slight grey for clean contrast */
+    font-size: 16px;
+}
+
+/* Paragraph text */
+p {
+    color: #f2f2f2 !important;
+}
+
+
+/* Main Title */
+.hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    text-align: center;
+    color: white;
+}
+
+/* Numbered Section Headings (1., 2., 3., etc.) */
+h2 {
+    color: #00bfff !important;   /* Classic Neon Blue */
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0,191,255,0.4);
+}
+
+h3, h4 {
+    color: #f2f2f2 !important;
+    font-weight: 600;
+}
+
+/* Bullet Points - Clean & Visible */
+ul {
+    list-style-type: disc;
+    padding-left: 25px;
+}
+
+ul li {
+    color: #e6e6e6 !important;
+    margin-bottom: 6px;
+}
+
+
+/* Buttons */
+div.stButton > button {
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    color: white;
+    border-radius: 30px;
+    font-weight: bold;
+    border: none;
+    padding: 10px 25px;
+    transition: 0.3s;
+}
+
+div.stButton > button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 20px rgba(255, 75, 75, 0.5);
+}
+            /* Futuristic Running Animation (Top Right Man Icon) */
+div[data-testid="stStatusWidget"] svg {
+    fill: #00ffe0 !important;          /* Neon cyan color */
+    filter: drop-shadow(0 0 8px #00ffe0);
+    animation: futuristicPulse 1.5s infinite ease-in-out;
+}
+
+/* Glow Pulse Animation */
+@keyframes futuristicPulse {
+    0% {
+        filter: drop-shadow(0 0 4px #00ffe0);
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 15px #00ffe0);
+        transform: scale(1.1);
+    }
+    100% {
+        filter: drop-shadow(0 0 4px #00ffe0);
+        transform: scale(1);
+    }
+}
+
+
+</style>
+""", unsafe_allow_html=True)
+
 
 # Load API Key
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Page Config
-st.set_page_config(page_title="AutoSage - AI Vehicle Expert", page_icon="🏎️")
+
 
 # --- UI Header ---
-st.title("🏎️ AutoSage: Your AI Vehicle Expert")
-st.markdown("---")
+st.markdown('<div class="hero-title">🚗 AutoSage: Your AI Vehicle Expert</div>', unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
+
 
 # --- Sidebar Navigation ---
 scenario = st.sidebar.radio("Go to:", ["Vehicle Comparison", "Maintenance Alerts", "Eco-Friendly Search"])
